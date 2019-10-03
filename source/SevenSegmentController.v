@@ -3,7 +3,7 @@ module SevenSegmentController
 	input wire clock,
 	
 	input  wire [15:0] value,
-	input  wire [ 7:0] pointEnable,
+	//input  wire [ 7:0] pointEnable,
 	
 	output wire [7:0] segmentEnableN,
 	output wire [7:0] digitEnableN
