@@ -8,7 +8,7 @@ module SevenSegmentController
 );
 	
 	SevenSegmentEncoder encoder(.value(switches[3:0]), .segmentEnableN(segmentEnableN[6:0]));
-	assign segmentEnableN[7] = 0;
+	assign segmentEnableN[7] = 1;
 	
 	assign digitEnableN = ~switches[15:8];
 	
