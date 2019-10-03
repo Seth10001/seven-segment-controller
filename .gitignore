@@ -2,3 +2,4 @@
 *.cache
 *.hw
 *.runs
+source/constraints/constraints.xdc
