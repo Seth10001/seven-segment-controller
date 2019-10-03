@@ -12,6 +12,6 @@ module SevenSegmentController
 	
 	SevenSegmentEncoder encoder(.value(value[3:0]), .pointEnable(0), .segmentEnableN(segmentEnableN));
 	
-	assign digitEnableN = ~switches[15:8];
+	assign digitEnableN = ~value[15:8];
 	
 endmodule
