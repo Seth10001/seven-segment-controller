@@ -15,7 +15,9 @@
 module SevenSegmentEncoder
 (
 	input	wire	[3:0]	value,
-	output	wire	[6:0]	segmentEnableN
+	input	wire			pointEnable,
+	
+	output	wire	[7:0]	segmentEnableN
 );
 	
 	`define SEGMENT_TOP				0
@@ -38,7 +40,7 @@ module SevenSegmentEncoder
 	
 	reg [6:0] segmentEnable;
 	
-	assign segmentEnableN = ~segmentEnable;
+	assign segmentEnableN = ~{pointEnable, segmentEnable};
 	
 	
 	//Set sensitivity list to all signals and all changes to allow combinational logic
