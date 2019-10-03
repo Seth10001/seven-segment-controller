@@ -7,8 +7,7 @@ module SevenSegmentController
 	output wire [7:0] digitEnableN
 );
 	
-	SevenSegmentEncoder encoder(.value(switches[3:0]), .segmentEnableN(segmentEnableN[6:0]));
-	assign segmentEnableN[7] = 1;
+	SevenSegmentEncoder encoder(.value(switches[3:0]), .pointEnable(0), .segmentEnableN(segmentEnableN));
 	
 	assign digitEnableN = ~switches[15:8];
 	
