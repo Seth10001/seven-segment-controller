@@ -1,16 +1,18 @@
 /**
- * Encode a normal value to a bitmap for use in seven-segment displays
+ * Encode a normal value to a segment enable mask for use in seven-segment displays
  *
  * Directly adapted from `hexTo7Segment` module written by Cameron Braun
  *
  * @author caustin43@gatech.edu
  * @author cameronbraun@gatech.edu
  * @author mlewis61@gatech.edu
- * @date 2018-09-27
+ * @date 2019-10-02
  *
  *
- * @param[in]	value	the value to encode
- * @param[out]	bitmap	the seven-segment bitmap corresponding to the input value
+ * @param[in]	value			the value to encode
+ * @param[in]	pointEnable		display the decimal point on the "seven"-segment display
+ * 
+ * @param[out]	segmentEnableN	the "seven"-segment active-low enable mask corresponding to the input values
  */
 module SevenSegmentEncoder
 (
