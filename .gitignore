@@ -1,1 +1,4 @@
 .tags
+*.cache
+*.hw
+*.runs
