@@ -35,7 +35,6 @@ module SevenSegmentEncoder
 	`define SEGMENT_MASK_LEFT_BOTTOM	(1 << `SEGMENT_LEFT_BOTTOM)
 	`define SEGMENT_MASK_LEFT_TOP		(1 << `SEGMENT_LEFT_TOP)
 	`define SEGMENT_MASK_CENTER			(1 << `SEGMENT_CENTER)
-	`define SEGMENT_MASK_POINT			(1 << `SEGMENT_POINT)
 	`define SEGMENT_MASK_ALL			7'b1111111
 	
 	reg [6:0] segmentEnable;
