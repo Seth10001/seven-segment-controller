@@ -9,35 +9,35 @@
  * @date 2019-10-02
  *
  *
- * @param[in]	value			the value to encode
- * @param[in]	pointEnable		display the decimal point on the "seven"-segment display
+ * @param[in]  value          the value to encode
+ * @param[in]  pointEnable    display the decimal point on the "seven"-segment display
  * 
- * @param[out]	segmentEnableN	the "seven"-segment active-low enable mask corresponding to the input values
+ * @param[out] segmentEnableN the "seven"-segment active-low enable mask corresponding to the input values
  */
 module SevenSegmentEncoder
 (
-	input	wire	[3:0]	value,
-	input	wire			pointEnable,
+	input  wire [3:0] value,
+	input  wire       pointEnable,
 	
-	output	wire	[7:0]	segmentEnableN
+	output wire [7:0] segmentEnableN
 );
 	
-	`define SEGMENT_TOP				0
-	`define SEGMENT_RIGHT_TOP		1
-	`define SEGMENT_RIGHT_BOTTOM 	2
-	`define SEGMENT_BOTTOM			3
-	`define SEGMENT_LEFT_BOTTOM		4
-	`define SEGMENT_LEFT_TOP		5
-	`define SEGMENT_CENTER			6
+	`define SEGMENT_TOP          0
+	`define SEGMENT_RIGHT_TOP    1
+	`define SEGMENT_RIGHT_BOTTOM 2
+	`define SEGMENT_BOTTOM       3
+	`define SEGMENT_LEFT_BOTTOM  4
+	`define SEGMENT_LEFT_TOP     5
+	`define SEGMENT_CENTER       6
 	
-	`define SEGMENT_MASK_TOP			(1 << `SEGMENT_TOP)
-	`define SEGMENT_MASK_RIGHT_TOP		(1 << `SEGMENT_RIGHT_TOP)
-	`define SEGMENT_MASK_RIGHT_BOTTOM 	(1 << `SEGMENT_RIGHT_BOTTOM)
-	`define SEGMENT_MASK_BOTTOM			(1 << `SEGMENT_BOTTOM)
-	`define SEGMENT_MASK_LEFT_BOTTOM	(1 << `SEGMENT_LEFT_BOTTOM)
-	`define SEGMENT_MASK_LEFT_TOP		(1 << `SEGMENT_LEFT_TOP)
-	`define SEGMENT_MASK_CENTER			(1 << `SEGMENT_CENTER)
-	`define SEGMENT_MASK_ALL			7'b1111111
+	`define SEGMENT_MASK_TOP          (1 << `SEGMENT_TOP)
+	`define SEGMENT_MASK_RIGHT_TOP    (1 << `SEGMENT_RIGHT_TOP)
+	`define SEGMENT_MASK_RIGHT_BOTTOM (1 << `SEGMENT_RIGHT_BOTTOM)
+	`define SEGMENT_MASK_BOTTOM	      (1 << `SEGMENT_BOTTOM)
+	`define SEGMENT_MASK_LEFT_BOTTOM  (1 << `SEGMENT_LEFT_BOTTOM)
+	`define SEGMENT_MASK_LEFT_TOP     (1 << `SEGMENT_LEFT_TOP)
+	`define SEGMENT_MASK_CENTER       (1 << `SEGMENT_CENTER)
+	`define SEGMENT_MASK_ALL          7'b1111111
 	
 	reg [6:0] segmentEnable;
 	
