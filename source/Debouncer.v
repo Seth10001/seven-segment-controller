@@ -32,6 +32,7 @@ module Debouncer #(
 		history = {history[0], in};
 	end
 	
+	
 	// Debounce input by waiting for a counter to fill with stable input before propagating to output
 	reg [COUNTER_WIDTH-1 : 0] counter;
 	always @(posedge clock)
@@ -47,7 +48,7 @@ module Debouncer #(
 		begin
 			counter <= counter + 1;
 			
-			// If the counter if maxed out, propagate input to output
+			// If the counter is maxed out, propagate input to output
 			if (counter == {COUNTER_WIDTH{1'b1}})
 			begin
 				out <= history[1];
