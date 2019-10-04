@@ -5,5 +5,3 @@
 *.runs
 *.ip_user_files
 *.sim
-
-source/constraints/constraints.xdc
