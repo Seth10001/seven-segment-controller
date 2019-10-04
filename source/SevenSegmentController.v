@@ -72,7 +72,25 @@ module SevenSegmentController #(
 		.segmentEnableN(segmentEnableN)
 	);
 	
-	// Create an active-low enable mask for which digit is active
-	assign digitEnableN = ~(1 << digit);
+	
+	// Create a mask representing which digits should be enabled
+	reg [NUM_DIGITS-1 : 0] digitEnable;
+	always @(*)
+	begin
+		// Turn off all digits during reset
+		if (reset)
+		begin
+			digitEnable = 0;
+		end
+		
+		// Otherwise, output a 1 in the bit location corresponding to the current digit
+		else
+		begin
+			digitEnable = (1 << digit);
+		end
+	end
+	
+	// Output expected active-low version of enable mask
+	assign digitEnableN = ~digitEnable;
 	
 endmodule
