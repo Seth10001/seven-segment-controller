@@ -25,26 +25,19 @@ module SevenSegmentController_top (
 	);
 	
 	
-	// Debounce and detect edges on input buttons
+	// Debounce and detect edges on input buttons for changing selected digit for decimal-point control
 	wire leftEdgeRising;
 	wire rightEdgeRising;
-	wire toggleEdgeRising;
-	RisingEdgeDetector leftEdgeDetector(
+	RisingEdgeDetector leftDetector(
 		.clock(clock), .reset(reset),
 		.in(buttons[`BUTTON_LEFT]),
 		.detected(leftEdgeRising)
 	);
-	RisingEdgeDetector rightEdgeDetector(
+	RisingEdgeDetector rightDetector(
 		.clock(clock), .reset(reset),
 		.in(buttons[`BUTTON_RIGHT]),
 		.detected(rightEdgeRising)
 	);
-	RisingEdgeDetector toggleEdgeDetector(
-		.clock(clock), .reset(reset),
-		.in(buttons[`BUTTON_CENTER]),
-		.detected(toggleEdgeRising)
-	);
-	
 	
 	// Change the current digit for decimal-point-enabling based on button inputs
 	reg [1:0] currentPoint = 0;
@@ -55,22 +48,29 @@ module SevenSegmentController_top (
 			currentPoint <= 0;
 		end
 		
-		else
+		else if (leftEdgeRising)
 		begin
-			// Increment point index (move point left) when left button has a rising edge
-			if (leftEdgeRising)
-			begin
-				currentPoint <= currentPoint + 1;
-			end
-			
-			// Decrement point index (move point right) when right button has a rising edge (and left does not)
-			else if (rightEdgeRising)
-			begin
-				currentPoint <= currentPoint - 1;
-			end
+			currentPoint <= currentPoint + 1;
+		end
+		
+		// Decrement point index (move point right) when right button has a rising edge (and left does not)
+		else if (rightEdgeRising)
+		begin
+			currentPoint <= currentPoint - 1;
 		end
 	end
 	
+	// Display currently-selected decimal point on LEDs
+	assign leds = 1 << currentPoint;
+	
+	
+	// Debounce and detect edges on button for toggling demical-point on selected digit
+	wire toggleEdgeRising;
+	RisingEdgeDetector toggleDetector(
+		.clock(clock), .reset(reset),
+		.in(buttons[`BUTTON_CENTER]),
+		.detected(toggleEdgeRising)
+	);
 	
 	// Initialize decimal point selection to 0
 	reg [3:0] pointEnable = 0;
@@ -99,8 +99,5 @@ module SevenSegmentController_top (
 	
 	// Disable upper unused digits
 	assign digitEnableN[7:4] = 4'b1111;
-	
-	// Display currently-selected decimal point on LEDs
-	assign leds = 1 << currentPoint;
 	
 endmodule
