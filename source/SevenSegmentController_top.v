@@ -25,52 +25,25 @@ module SevenSegmentController_top (
 	);
 	
 	
-	// Debounce input buttons
-	wire leftButton;
-	wire rightButton;
-	wire toggleButton;
-	Debouncer leftDebouncer(
-		.clock(clock),
+	// Debounce and detect edges on input buttons
+	wire leftEdgeRising;
+	wire rightEdgeRising;
+	wire toggleEdgeRising;
+	RisingEdgeDetector leftEdgeDetector(
+		.clock(clock), .reset(reset),
 		.in(buttons[`BUTTON_LEFT]),
-		.out(leftButton)
+		.detected(leftEdgeRising)
 	);
-	Debouncer rightDebouncer(
-		.clock(clock),
+	RisingEdgeDetector rightEdgeDetector(
+		.clock(clock), .reset(reset),
 		.in(buttons[`BUTTON_RIGHT]),
-		.out(rightButton)
+		.detected(rightEdgeRising)
 	);
-	Debouncer toggleDebouncer(
-		.clock(clock),
+	RisingEdgeDetector toggleEdgeDetector(
+		.clock(clock), .reset(reset),
 		.in(buttons[`BUTTON_CENTER]),
-		.out(toggleButton)
+		.detected(toggleEdgeRising)
 	);
-	
-	
-	// Detect rising edges of buttons by storing value from previous clock cycle
-	reg previousLeftButton   = 0;
-	reg previousRightButton  = 0;
-	reg previousToggleButton = 0;
-	always @(posedge reset, posedge clock)
-	begin
-		if (reset)
-		begin
-			previousLeftButton   <= 0;
-			previousRightButton  <= 0;
-			previousToggleButton <= 0;
-		end
-		
-		else
-		begin
-			previousLeftButton   <= leftButton;
-			previousRightButton  <= rightButton;
-			previousToggleButton <= toggleButton;
-		end
-	end
-	
-	// Raise edge signals when previous value was low and new value is high
-	wire leftEdgeRising   = ~previousLeftButton   & leftButton;
-	wire rightEdgeRising  = ~previousRightButton  & rightButton;
-	wire toggleEdgeRising = ~previousToggleButton & toggleButton;
 	
 	
 	// Change the current digit for decimal-point-enabling based on button inputs
