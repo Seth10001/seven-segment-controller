@@ -1,27 +1,54 @@
-module Debouncer (
-    input clk, //this is a 50MHz clock provided on FPGA pin PIN_Y2
-    input PB,  //this is the input to be debounced
-     output reg PB_state  //this is the debounced switch
-);
-/*This module debounces the pushbutton PB.
- *It can be added to your project files and called as is:
- *DO NOT EDIT THIS MODULE
+/*
+ * Debounce an input signal by waiting for input to stabilize for parameterized amount of time
+ * @see http://www.eecs.umich.edu/courses/eecs270/270lab/270_docs/debounce.html
+ *
+ * @author mlewis61@gatech.edu
+ * @date 2019-10-03
+ *
+ * 
+ * @tparam     COUNTER_WIDTH the bit width of the counter to fill at the input clock speed before changing output
+ *
+ * @param[in]  clock         the clock used to increment the internal counter
+ * 
+ * @param[in]  in            the input signal to be debounced
+ * 
+ * @param[out] out           the output, debounced signal
  */
-
-// Synchronize the switch input to the clock
-reg PB_sync_0;
-always @(posedge clk) PB_sync_0 <= PB; 
-reg PB_sync_1;
-always @(posedge clk) PB_sync_1 <= PB_sync_0;
-
-// Debounce the switch
-reg [15:0] PB_cnt;
-always @(posedge clk)
-if(PB_state==PB_sync_1)
-    PB_cnt <= 0;
-else
-begin
-    PB_cnt <= PB_cnt + 1'b1;  
-    if(PB_cnt == 16'hffff) PB_state <= ~PB_state;  
-end
+module Debouncer #(
+	parameter COUNTER_WIDTH = 16
+)(
+	input  wire clock,
+	
+	input  wire in,
+	
+	output reg  out
+);
+	
+	// Synchronize input to clock through shift register
+	reg [1:0] history;
+	always @(posedge clock)
+	begin
+		history = {history[0], in};
+	end
+	
+	// Debounce input by waiting for a counter to fill with stable input before propagating to output
+	// At 100 MHz and default 16-bit counter, this takes approximately 655 ns
+	reg [COUNTER_WIDTH-1 : 0] counter;
+	always @(posedge clock)
+	begin
+		if (out == history[1])
+		begin
+			counter <= 0;
+		end
+		
+		else
+		begin
+			counter <= counter + 1;
+			
+			if (counter == {COUNTER_WIDTH{1'b1}})
+			begin
+				out <= history[1];
+			end
+		end
+	end
 endmodule
