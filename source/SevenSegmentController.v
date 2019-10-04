@@ -23,6 +23,7 @@ module SevenSegmentController #(
 	parameter NUM_DIGITS      =  8
 )(
 	input  wire                        clock,
+	input  wire                        reset,
 	
 	input  wire [NUM_DIGITS*4 - 1 : 0] data,
 	input  wire [    NUM_DIGITS-1 : 0] pointEnable,
@@ -45,14 +46,14 @@ module SevenSegmentController #(
 	// Divide the input clock to the configured frequency
 	wire refreshClock;
 	ClockDivider #(.COUNTER_WIDTH(CLOCK_DIVISIONS)) divider(
-		.clock(clock), .reset(0), .enable(1),
+		.clock(clock), .reset(reset), .enable(~reset),
 		.out(refreshClock)
 	);
 	
-	always @(posedge refreshClock)
+	always @(posedge reset, posedge refreshClock)
 	begin
-		// Reset digit to 0 if at max digit number
-		if (digit == NUM_DIGITS-1)
+		// Reset digit to 0 if at max digit number or if module is being reset
+		if (reset || digit == NUM_DIGITS-1)
 		begin
 			digit <= 0;
 		end
