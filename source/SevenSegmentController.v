@@ -44,9 +44,9 @@ module SevenSegmentController #(
 	
 	// Divide the input clock to the configured frequency
 	wire refreshClock;
-	ClockDivider #(.DIVISIONS(CLOCK_DIVISIONS)) divider(
-		.inClock(clock),
-		.outClock(refreshClock)
+	ClockDivider #(.COUNTER_WIDTH(CLOCK_DIVISIONS)) divider(
+		.clock(clock), .reset(0), .enable(1),
+		.out(refreshClock)
 	);
 	
 	always @(posedge refreshClock)
