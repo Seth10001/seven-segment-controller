@@ -13,36 +13,62 @@
  * @param[out] outClock  the divided clock signal
  */
 module ClockDivider #(
-	parameter DIVISIONS = 1
+	parameter COUNTER_WIDTH        = 1,
+	parameter PULSE_WIDTH_MODULATE = 0
 )(
-	input wire inClock,
+	input  wire                       clock,
+	input  wire                       reset,
+	input  wire                       enable,
 	
-	output wire outClock
+	input  wire [COUNTER_WIDTH-1 : 0] activeCycles,
+	
+	output reg                        out
 );
 	
-	// Zero out all clocks initially
-	reg [DIVISIONS : 0] clocks = {(DIVISIONS + 1){1'b0}};
-	
-	// Ease generation by tying the lowest clock bit to the input signal
-	always @(*)
-	begin
-		clocks[0] = inClock;
-	end
-	
-	// For each clock division requested, use one clock's positive edge to flip the next clock
-	// This results in a division in frequency by 2 for each division requested
-	genvar index;
+	wire [COUNTER_WIDTH-1 : 0] _activeCycles;
 	generate
-		for (index = 0; index < DIVISIONS; index = index+1)
+		// If pulse-width modulation is enabled, use input as the counter target for duty-cycle control
+		if (PULSE_WIDTH_MODULATE == 1)
 		begin
-			always @(posedge clocks[index])
-			begin
-				clocks[index+1] <= ~clocks[index+1];
-			end
+			assign _activeCycles = activeCycles;
+		end
+		
+		// Otherwise, use 50% duty cycle (count to half the counter total)
+		else
+		begin
+			assign _activeCycles = {1'b1, {(COUNTER_WIDTH-1){1'b0}}};
 		end
 	endgenerate
 	
-	// Output the highest-bit (lowest-frequency) clock
-	assign outClock = clocks[DIVISIONS];
 	
+	reg [COUNTER_WIDTH-1 : 0] counter = 0;
+	always @(posedge reset, posedge clock)
+	begin
+		// Reset counter and output to 0 on reset or when disabled
+		if (reset || !enable)
+		begin
+			counter <= 0;
+			out     <= 0;
+		end
+		
+		// When enabled, increment the counter each cycle and output high when it is less than the configured `_activeCycles`
+		else if (enable)
+		begin
+			// Until `_activeCycles`, the output should be high
+			// This provides configuration over the length of the positive duty cycle
+			if (counter < _activeCycles)
+			begin
+				out <= 1;
+			end
+			
+			// After, the outupt should be low
+			else
+			begin
+				out <= 0;
+			end
+			
+			// Increment the counter, relying on overflow for resetting
+			counter <= counter + 1;
+		end
+	end
 endmodule
