@@ -5,10 +5,12 @@
  * @author mlewis61@gatech.edu
  * @date 2019-10-02
  *
+ *
+ * @tparam     DIVISIONS the number of times to divide the input clock by 2, defaulting to 1
  * 
- * @param[in]  inClock  the clock signal to divide
+ * @param[in]  inClock   the clock signal to divide
  * 
- * @param[out] outClock the divided clock signal
+ * @param[out] outClock  the divided clock signal
  */
 module ClockDivider #(
 	parameter DIVISIONS = 1
