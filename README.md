@@ -30,7 +30,7 @@ This repository is designed to be used as a [git submodule](https://git-scm.com/
 
 #### Notes ####
 
-The Vivado project is configured to look for the constraints file at `source/constraints/constraints.xdc`, which is not included in this repository to allow for other boards to be targeted without affecting the source. All of Digilent's boards have their default constraints files in `source/constraints/templates/digilent`, and can be copied or linked to the expected location from there.
+The Vivado project is configured to look for the constraints file at `source/constraints/constraints.xdc`, which is not included in this repository to allow for other boards to be targeted without affecting the source. All of Digilent's boards have their default constraints files in `source/constraints/templates/digilent` (merged from [Digilent's constraints templates repository](https://github.com/Digilent/digilent-xdc)), and can be copied or linked to the expected location from there.
 
 You may notice that the `Makefiles` make a hard link between the template constraints file and the expected location, and that there is a `post-checkout` git hook installed to remove and recreate this link on every checkout; this is to facilitate developing this project on Mac/Linux system and using a Windows VM with shared directories to actually build and deploy the project. Windows does not fully support Unix-style symlinks, so a hard link must be used instead; however, git does not recognize hard links and will overwrite them when performing `checkout` operations. Thus, the git hook will re-create the hard link after every checkout to ensure the link is always correct.
 
