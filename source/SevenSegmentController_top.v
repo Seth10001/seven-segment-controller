@@ -7,7 +7,7 @@ module SevenSegmentController_top (
 	
 	output wire [ 7:0] segmentEnableN,
 	output wire [ 7:0] digitEnableN,
-	output wire [15:0] leds
+	output wire [ 3:0] leds
 );	
 	
 	// Define some constants for button indexes
@@ -43,8 +43,8 @@ module SevenSegmentController_top (
 	
 	
 	// Initialize decimal point selection to 0
-	reg [7:0] pointEnable    = 0;
-	reg [2:0] currentPoint   = 0;
+	reg [3:0] pointEnable    = 0;
+	reg [1:0] currentPoint   = 0;
 	
 	// Detect rising edges of buttons by storing value from previous clock cycle
 	reg previousLeftButton   = 0;
@@ -96,16 +96,14 @@ module SevenSegmentController_top (
 	end
 	
 	
-	// Extend data provided by switches to 32 bits
-	wire [31:0] data = {16'b0, switches};
-	
-	
 	// Encode input switch data into segment and digit enable masks
-	SevenSegmentController controller(
-		.clock(clock), .data(data), .pointEnable(pointEnable),
-		.segmentEnableN(segmentEnableN), .digitEnableN(digitEnableN)
+	SevenSegmentController #(.NUM_DIGITS(4), .CLOCK_DIVISIONS(18)) controller(
+		.clock(clock), .data(switches), .pointEnable(pointEnable),
+		.segmentEnableN(segmentEnableN), .digitEnableN(digitEnableN[3:0])
 	);
 	
+	// Disable upper unused digits
+	assign digitEnableN[7:4] = 4'b1111;
 	
 	// Display currently-selected decimal point on LEDs
 	assign leds = 1 << currentPoint;

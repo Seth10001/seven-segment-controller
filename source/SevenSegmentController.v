@@ -6,28 +6,34 @@
  * @author mlewis61@gatech.edu
  * @date 2019-10-02
  *
+ *
+ * @tparam     CLOCK_DIVISIONS the number of times to divide the input clock frequency by 2
+ *                                 defaults to 17, or roughly 763 Hz overall and 95 Hz refresh rate per digit for a 100 MHz input clock and default 8 digits
+ * @tparam     NUM_DIGITS      the number of seven-segment digits to control, defaults to 8
  * 
  * @param[in]  clock           the input clock signal, assumed to be 100 MHz for default parameters
- * @param[in]  data            the data to encode and display
+ * @param[in]  data            the data to encode and display, with 4 bits per configured digit
  * @param[in]  pointEnable     the active-high enable mask for the decimal point in each digit
  * 
  * @param[out] segmentEnableN  the active-low enable mask for the segments on every digit
  * @param[out] digitEnableN    the active-low enable mask for which digits should display the output segments
  */
 module SevenSegmentController #(
-	parameter CLOCK_DIVISIONS = 17
+	parameter CLOCK_DIVISIONS = 17,
+	parameter NUM_DIGITS      =  8
 )(
-	input  wire        clock,
+	input  wire                        clock,
 	
-	input  wire [31:0] data,
-	input  wire [ 7:0] pointEnable,
+	input  wire [NUM_DIGITS*4 - 1 : 0] data,
+	input  wire [    NUM_DIGITS-1 : 0] pointEnable,
 	
-	output wire [ 7:0] segmentEnableN,
-	output wire [ 7:0] digitEnableN
+	output wire [               7 : 0] segmentEnableN,
+	output wire [    NUM_DIGITS-1 : 0] digitEnableN
 );
 	
 	// Initialize the current digit to 0
-	reg [2:0] digit = 3'b0;
+	// This doesn't really have to be this long, but no good way of getting log2 of a parameter
+	reg [NUM_DIGITS-1 : 0] digit = 0;
 	
 	// Select the data corresponding to the current digit from the total data
 	wire [3:0] currentData = data[digit * 4 +: 4];
@@ -36,18 +42,26 @@ module SevenSegmentController #(
 	wire currentPointEnable = pointEnable[digit];
 	
 	
-	// For default parameters, divide the 100 MHz input clock by 2^17, for an output of roughly 763 Hz
-	// Note that each clock cycle changes which digit (of 8) is active, so the refresh rate for a single digit is roughly 95 Hz
+	// Divide the input clock to the configured frequency
 	wire refreshClock;
 	ClockDivider #(.DIVISIONS(CLOCK_DIVISIONS)) divider(
 		.inClock(clock),
 		.outClock(refreshClock)
 	);
 	
-	// Increment the digit on a clock edge, relying on overflow to reset
 	always @(posedge refreshClock)
 	begin
-		digit <= digit + 1;
+		// Reset digit to 0 if at max digit number
+		if (digit == NUM_DIGITS-1)
+		begin
+			digit <= 0;
+		end
+		
+		// Otherwise, increment the digit
+		else
+		begin
+			digit <= digit + 1;
+		end
 	end
 	
 	
