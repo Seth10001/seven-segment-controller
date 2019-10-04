@@ -40,7 +40,7 @@ module ClockDivider #(
 		end
 	endgenerate
 	
-	// Output the last clock
+	// Output the highest-bit (lowest-frequency) clock
 	assign outClock = clocks[DIVISIONS];
 	
 endmodule
