@@ -1,4 +1,4 @@
-module debouncer(
+module Debouncer (
     input clk, //this is a 50MHz clock provided on FPGA pin PIN_Y2
     input PB,  //this is the input to be debounced
      output reg PB_state  //this is the debounced switch
