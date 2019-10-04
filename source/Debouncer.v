@@ -7,6 +7,7 @@
  *
  * 
  * @tparam     COUNTER_WIDTH the bit width of the counter to fill at the input clock speed before changing output
+ *                               defaults to 16, or approximately 655 ns at 100 MHz clock input
  *
  * @param[in]  clock         the clock used to increment the internal counter
  * 
@@ -32,7 +33,6 @@ module Debouncer #(
 	end
 	
 	// Debounce input by waiting for a counter to fill with stable input before propagating to output
-	// At 100 MHz and default 16-bit counter, this takes approximately 655 ns
 	reg [COUNTER_WIDTH-1 : 0] counter;
 	always @(posedge clock)
 	begin
