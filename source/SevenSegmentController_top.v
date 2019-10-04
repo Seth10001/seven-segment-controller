@@ -8,7 +8,7 @@ module SevenSegmentController_top (
 	output wire [ 7:0] segmentEnableN,
 	output wire [ 7:0] digitEnableN,
 	output wire [ 3:0] leds
-);	
+);
 	
 	// Define some constants for button indexes
 	`define BUTTON_LEFT   0
