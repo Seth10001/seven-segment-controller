@@ -15,11 +15,20 @@ module SevenSegmentController_top (
 	`define BUTTON_CENTER 1
 	`define BUTTON_RIGHT  2
 	
+	
+	// Debounce and invert active-low reset button
+	wire reset;
+	Debouncer resetDebouncer(
+		.clock(clock),
+		.in(~resetN),
+		.out(reset)
+	);
+	
+	
 	// Debounce input buttons
 	wire leftButton;
 	wire rightButton;
 	wire toggleButton;
-	wire reset;
 	Debouncer leftDebouncer(
 		.clock(clock),
 		.in(buttons[`BUTTON_LEFT]),
@@ -35,33 +44,16 @@ module SevenSegmentController_top (
 		.in(buttons[`BUTTON_CENTER]),
 		.out(toggleButton)
 	);
-	Debouncer resetDebouncer(
-		.clock(clock),
-		.in(~resetN),
-		.out(reset)
-	);
 	
-	
-	// Initialize decimal point selection to 0
-	reg [3:0] pointEnable    = 0;
-	reg [1:0] currentPoint   = 0;
 	
 	// Detect rising edges of buttons by storing value from previous clock cycle
 	reg previousLeftButton   = 0;
 	reg previousRightButton  = 0;
 	reg previousToggleButton = 0;
-	wire leftEdgeRising   = ~previousLeftButton   & leftButton;
-	wire rightEdgeRising  = ~previousRightButton  & rightButton;
-	wire toggleEdgeRising = ~previousToggleButton & toggleButton;
-	
 	always @(posedge reset, posedge clock)
 	begin
-		// Clear all registers back to initial values
 		if (reset)
 		begin
-			pointEnable          <= 0;
-			currentPoint         <= 0;
-			
 			previousLeftButton   <= 0;
 			previousRightButton  <= 0;
 			previousToggleButton <= 0;
@@ -69,29 +61,58 @@ module SevenSegmentController_top (
 		
 		else
 		begin
-			// Update button history values
 			previousLeftButton   <= leftButton;
 			previousRightButton  <= rightButton;
 			previousToggleButton <= toggleButton;
-			
-			
-			// Increment point index when left button has a rising edge
+		end
+	end
+	
+	// Raise edge signals when previous value was low and new value is high
+	wire leftEdgeRising   = ~previousLeftButton   & leftButton;
+	wire rightEdgeRising  = ~previousRightButton  & rightButton;
+	wire toggleEdgeRising = ~previousToggleButton & toggleButton;
+	
+	
+	// Change the current digit for decimal-point-enabling based on button inputs
+	reg [1:0] currentPoint = 0;
+	always @(posedge reset, posedge clock)
+	begin
+		if (reset)
+		begin
+			currentPoint <= 0;
+		end
+		
+		else
+		begin
+			// Increment point index (move point left) when left button has a rising edge
 			if (leftEdgeRising)
 			begin
 				currentPoint <= currentPoint + 1;
 			end
 			
-			// Decrement point index when right button has a rising edge (and left does not)
+			// Decrement point index (move point right) when right button has a rising edge (and left does not)
 			else if (rightEdgeRising)
 			begin
 				currentPoint <= currentPoint - 1;
 			end
-			
-			// Toggle enabled state of selected decimal point when toggle button has a rising edge (and the other buttons do not)
-			else if (toggleEdgeRising)
-			begin
-				pointEnable[currentPoint] = ~pointEnable[currentPoint];
-			end
+		end
+	end
+	
+	
+	// Initialize decimal point selection to 0
+	reg [3:0] pointEnable = 0;
+	always @(posedge reset, posedge clock)
+	begin
+		// Clear all registers back to initial values
+		if (reset)
+		begin
+			pointEnable <= 0;
+		end
+		
+		// Toggle enabled state of selected decimal point when toggle button has a rising edge
+		else if (toggleEdgeRising)
+		begin
+			pointEnable[currentPoint] = ~pointEnable[currentPoint];
 		end
 	end
 	
