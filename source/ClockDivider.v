@@ -33,7 +33,7 @@ module ClockDivider #(
 	// This results in a division in frequency by 2 for each division requested
 	genvar index;
 	generate
-		for (index = 0; index < DIVISIONS; index=index+1)
+		for (index = 0; index < DIVISIONS; index = index+1)
 		begin
 			always @(posedge clocks[index])
 			begin
