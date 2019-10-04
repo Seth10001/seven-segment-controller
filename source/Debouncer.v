@@ -36,15 +36,18 @@ module Debouncer #(
 	reg [COUNTER_WIDTH-1 : 0] counter;
 	always @(posedge clock)
 	begin
+		// No need to debounce if the output and the older of the history bits are the same, so reset counter
 		if (out == history[1])
 		begin
 			counter <= 0;
 		end
 		
+		// Otherwise, the input and output signals are different, so count up
 		else
 		begin
 			counter <= counter + 1;
 			
+			// If the counter if maxed out, propagate input to output
 			if (counter == {COUNTER_WIDTH{1'b1}})
 			begin
 				out <= history[1];
