@@ -45,7 +45,7 @@ module ClockDivider #(
 	always @(posedge reset, posedge clock)
 	begin
 		// Reset counter and output to 0 on reset or when disabled
-		if (reset | ~enable)
+		if (reset || !enable)
 		begin
 			counter <= 0;
 			out     <= 0;
