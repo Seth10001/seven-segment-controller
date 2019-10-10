@@ -9,7 +9,7 @@
  *
  * @tparam     CLOCK_DIVISIONS the number of times to divide the input clock frequency by 2
  *                                 defaults to 17, or roughly 763 Hz overall and 95 Hz refresh rate per digit for a 100 MHz input clock and default 8 digits
- * @tparam     NUM_DIGITS      the number of seven-segment digits to control, defaults to 8
+ * @tparam     DIGITS          the number of seven-segment digits to control, defaults to 8
  * 
  * @param[in]  clock           the input clock signal, assumed to be 100 MHz for default parameters
  * @param[in]  data            the data to encode and display, with 4 bits per configured digit
@@ -20,21 +20,21 @@
  */
 module SevenSegmentController #(
 	parameter CLOCK_DIVISIONS = 17,
-	parameter NUM_DIGITS      =  8
+	parameter DIGITS          =  8
 )(
-	input  wire                        clock,
-	input  wire                        reset,
+	input  wire                    clock,
+	input  wire                    reset,
 	
-	input  wire [NUM_DIGITS*4 - 1 : 0] data,
-	input  wire [    NUM_DIGITS-1 : 0] pointEnable,
+	input  wire [DIGITS*4 - 1 : 0] data,
+	input  wire [    DIGITS-1 : 0] pointEnable,
 	
-	output wire [               7 : 0] segmentEnableN,
-	output wire [    NUM_DIGITS-1 : 0] digitEnableN
+	output wire [           7 : 0] segmentEnableN,
+	output wire [    DIGITS-1 : 0] digitEnableN
 );
 	
 	// Initialize the current digit to 0
 	// This doesn't really have to be this long, but no good way of getting log2 of a parameter
-	reg [NUM_DIGITS-1 : 0] digit = 0;
+	reg [DIGITS-1 : 0] digit = 0;
 	
 	// Select the data corresponding to the current digit from the total data
 	wire [3:0] currentData = data[digit * 4 +: 4];
@@ -53,7 +53,7 @@ module SevenSegmentController #(
 	always @(posedge reset, posedge refreshClock)
 	begin
 		// Reset digit to 0 if at max digit number or if module is being reset
-		if (reset || digit == NUM_DIGITS-1)
+		if (reset || digit == DIGITS-1)
 		begin
 			digit <= 0;
 		end
@@ -74,7 +74,7 @@ module SevenSegmentController #(
 	
 	
 	// Create a mask representing which digits should be enabled
-	reg [NUM_DIGITS-1 : 0] digitEnable;
+	reg [DIGITS-1 : 0] digitEnable;
 	always @(*)
 	begin
 		// Turn off all digits during reset

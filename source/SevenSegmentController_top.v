@@ -91,7 +91,7 @@ module SevenSegmentController_top (
 	
 	
 	// Encode input switch data into segment and digit enable masks
-	SevenSegmentController #(.NUM_DIGITS(4), .CLOCK_DIVISIONS(18)) controller(
+	SevenSegmentController #(.DIGITS(4), .CLOCK_DIVISIONS(18)) controller(
 		.clock(clock), .reset(reset),
 		.data(switches), .pointEnable(pointEnable),
 		.segmentEnableN(segmentEnableN), .digitEnableN(digitEnableN[3:0])
