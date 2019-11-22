@@ -6,4 +6,7 @@
 *.ip_user_files
 *.sim
 
+*.xpr
+*.dcp
+
 target
