@@ -61,7 +61,7 @@ module SevenSegmentController_top (
 	end
 	
 	// Display currently-selected decimal point on LEDs
-	assign leds = 1 << currentPoint;
+	assign leds = ({3'b0, ~reset}) << currentPoint;
 	
 	
 	// Debounce and detect edges on button for toggling demical-point on selected digit
