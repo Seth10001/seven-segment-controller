@@ -3,18 +3,14 @@ module SevenSegmentController_top (
 	input  wire        resetN,
 	
 	input  wire [15:0] switches,
-	input  wire [ 2:0] buttons,
+	input  wire        toggleButton,
+	input  wire        leftButton,
+	input  wire        rightButton,
 	
 	output wire [ 7:0] segmentEnableN,
 	output wire [ 7:0] digitEnableN,
 	output wire [ 3:0] leds
 );
-	
-	// Define some constants for button indexes
-	`define BUTTON_LEFT   0
-	`define BUTTON_CENTER 1
-	`define BUTTON_RIGHT  2
-	
 	
 	// Debounce and invert active-low reset button
 	wire reset;
@@ -30,12 +26,12 @@ module SevenSegmentController_top (
 	wire rightEdgeRising;
 	RisingEdgeDetector leftDetector(
 		.clock(clock), .reset(reset),
-		.in(buttons[`BUTTON_LEFT]),
+		.in(leftButton),
 		.detected(leftEdgeRising)
 	);
 	RisingEdgeDetector rightDetector(
 		.clock(clock), .reset(reset),
-		.in(buttons[`BUTTON_RIGHT]),
+		.in(rightButton),
 		.detected(rightEdgeRising)
 	);
 	
@@ -68,7 +64,7 @@ module SevenSegmentController_top (
 	wire toggleEdgeRising;
 	RisingEdgeDetector toggleDetector(
 		.clock(clock), .reset(reset),
-		.in(buttons[`BUTTON_CENTER]),
+		.in(toggleButton),
 		.detected(toggleEdgeRising)
 	);
 	
