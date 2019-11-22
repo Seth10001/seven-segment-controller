@@ -25,7 +25,7 @@ This repository implements a scanning controller for a multiplexed seven-segment
 
 #### Usage in other projects ####
 
-This repository is designed to be used as a [git submodule](https://git-scm.com/book/en/v2/Git-Tools-Submodules), from where the components (described below) can be used, either indivdually or together.
+This repository is designed to be used as a [git submodule](https://git-scm.com/book/en/v2/Git-Tools-Submodules), from where the components (described below) can be used, either individually or together.
 
 
 #### Notes ####
