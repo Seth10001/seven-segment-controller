@@ -5,3 +5,5 @@
 *.runs
 *.ip_user_files
 *.sim
+
+target
