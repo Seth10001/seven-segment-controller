@@ -10,6 +10,7 @@
  *                               defaults to 16, or approximately 655 ns at 100 MHz clock input
  *
  * @param[in]  clock         the clock used to increment the internal counter
+ * @param[in]  reset         active-high reset of debouncing history and counters
  * 
  * @param[in]  in            the input signal to be debounced
  * 
@@ -19,6 +20,7 @@ module Debouncer #(
 	parameter COUNTER_WIDTH = 16
 )(
 	input  wire clock,
+	input  wire reset,
 	
 	input  wire in,
 	
@@ -27,31 +29,48 @@ module Debouncer #(
 	
 	// Synchronize input to clock through shift register
 	reg [1:0] history;
-	always @(posedge clock)
+	always @(posedge reset, posedge clock)
 	begin
-		history = {history[0], in};
+		if (reset)
+		begin
+			history <= 0;
+		end
+		
+		else
+		begin
+			history = {history[0], in};
+		end
 	end
 	
 	
 	// Debounce input by waiting for a counter to fill with stable input before propagating to output
 	reg [COUNTER_WIDTH-1 : 0] counter;
-	always @(posedge clock)
+	always @(posedge reset, posedge clock)
 	begin
-		// No need to debounce if the output and the older of the history bits are the same, so reset counter
-		if (out == history[1])
+		if (reset)
 		begin
-			counter <= 0;
+			counter <= {COUNTER_WIDTH{1'b0}};
+			out     <= 0;
 		end
 		
-		// Otherwise, the input and output signals are different, so count up
 		else
 		begin
-			counter <= counter + 1;
-			
-			// If the counter is maxed out, propagate input to output
-			if (counter == {COUNTER_WIDTH{1'b1}})
+			// No need to debounce if the output and the older of the history bits are the same, so reset counter
+			if (out == history[1])
 			begin
-				out <= history[1];
+				counter <= {COUNTER_WIDTH{1'b0}};
+			end
+			
+			// Otherwise, the input and output signals are different, so count up
+			else
+			begin
+				counter <= counter + 1;
+				
+				// If the counter is maxed out, propagate input to output
+				if (counter == {COUNTER_WIDTH{1'b1}})
+				begin
+					out <= history[1];
+				end
 			end
 		end
 	end

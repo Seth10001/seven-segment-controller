@@ -33,7 +33,7 @@ module RisingEdgeDetector #(
 		if (DEBOUNCE == 1)
 		begin
 			Debouncer debouncer(
-				.clock(clock),
+				.clock(clock), .reset(reset),
 				.in(in),
 				.out(_in)
 			);

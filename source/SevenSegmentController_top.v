@@ -19,7 +19,7 @@ module SevenSegmentController_top (
 	// Debounce and invert active-low reset button
 	wire reset;
 	Debouncer resetDebouncer(
-		.clock(clock),
+		.clock(clock), .reset(0),
 		.in(~resetN),
 		.out(reset)
 	);
